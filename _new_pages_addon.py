@@ -62,7 +62,69 @@ class SettingsPage(tk.Frame):
                  font=F(9), bg=BG_MAIN, fg=TEXT_MID, anchor="e"
                  ).pack(fill="x", padx=20, pady=(4, 0))
 
+        # ── SHARING GUIDE CARD ───────────────────────────────────────
+        share_card = Card(self)
+        share_card.pack(fill="x", padx=20, pady=12)
+
+        tk.Label(share_card, text="📤  دليل المشاركة مع الزملاء",
+                 font=F(12, True), bg=BG_CARD, fg="#0D2137",
+                 anchor="e", padx=14, pady=8).pack(fill="x")
+
+        guide_f = tk.Frame(share_card, bg=BG_CARD, padx=20, pady=4)
+        guide_f.pack(fill="x")
+
+        # What TO share
+        yes_f = tk.Frame(guide_f, bg="#E8F5E9", relief="flat", bd=0, padx=12, pady=8)
+        yes_f.pack(fill="x", pady=4)
+        tk.Label(yes_f, text="✅  الملفات التي يجب مشاركتها:",
+                 font=F(10, True), bg="#E8F5E9", fg="#1B5E20", anchor="e").pack(fill="x")
+        tk.Label(yes_f,
+                 text="  pages.py  •  main.py  •  database.py  •  theme.py  •  _new_pages_addon.py\n"
+                      "  requirements.txt  •  تشغيل.vbs  •  مجلد assets/  •  مجلد templet/  •  مجلد utils/",
+                 font=F(9), bg="#E8F5E9", fg="#2E7D32", anchor="e",
+                 justify="right").pack(fill="x")
+
+        # What NOT to share
+        no_f = tk.Frame(guide_f, bg="#FFEBEE", relief="flat", bd=0, padx=12, pady=8)
+        no_f.pack(fill="x", pady=4)
+        tk.Label(no_f, text="❌  الملفات التي لا تُشارك (بياناتك الخاصة):",
+                 font=F(10, True), bg="#FFEBEE", fg="#B71C1C", anchor="e").pack(fill="x")
+        tk.Label(no_f,
+                 text="  almadoun.db  (قاعدة البيانات — تحتوي على بياناتك)\n"
+                      "  مجلد exports/  •  مجلد __pycache__/  •  مجلد .venv/",
+                 font=F(9), bg="#FFEBEE", fg="#C62828", anchor="e",
+                 justify="right").pack(fill="x")
+
+        tip_f = tk.Frame(guide_f, bg="#FFF9C4", relief="flat", bd=0, padx=12, pady=8)
+        tip_f.pack(fill="x", pady=4)
+        tk.Label(tip_f,
+                 text="💡  كل مستخدم جديد سيحصل على قاعدة بيانات فارغة تلقائياً عند أول تشغيل، وسيظهر له معالج الإعداد.",
+                 font=F(9), bg="#FFF9C4", fg="#5D4037", anchor="e",
+                 wraplength=500, justify="right").pack(fill="x")
+
+        # Prepare share folder button
+        btn_share_f = tk.Frame(share_card, bg=BG_CARD, padx=14, pady=10)
+        btn_share_f.pack(fill="x")
+
+        self._share_status_var = tk.StringVar()
+        tk.Label(btn_share_f, textvariable=self._share_status_var,
+                 font=F(9), bg=BG_CARD, fg=GREEN, anchor="e").pack(side="right", padx=8)
+        ActionBtn(btn_share_f, "📦  إعداد مجلد المشاركة",
+                  command=self._prepare_share, style="primary").pack(side="right", padx=4)
+
         self.refresh()
+
+    def _prepare_share(self):
+        try:
+            import main as _main
+            share_dir, copied = _main._prepare_share_folder()
+            import subprocess
+            subprocess.Popen(["explorer", share_dir])
+            self._share_status_var.set(f"✅  تم إنشاء المجلد: share/  ({len(copied)} ملف)")
+        except Exception as e:
+            self._share_status_var.set(f"❌  خطأ: {e}")
+
+
 
     def _pick_logo(self):
         path = filedialog.askopenfilename(
